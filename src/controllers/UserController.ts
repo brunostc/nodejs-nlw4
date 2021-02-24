@@ -19,6 +19,24 @@ class UserController {
 
 		return res.json(user);
 	}
+
+	async index(req: Request, res: Response) {
+		const users = await getRepository(User)
+			.createQueryBuilder("users")
+			.getMany();						
+
+		return res.json(users);
+	}
+
+	async get(req: Request, res: Response) {
+		const userId = req.params.id;
+		const usersRepository = getRepository(User);
+		const user = await usersRepository.findOne(userId);
+
+		if (! user) return res.status(400).json({ msg: 'User not found' });
+
+		return res.json(user);
+	}
 }
 
 export { UserController };
