@@ -1,12 +1,12 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
-import { Survey as survey } from '../models/Survey';
+import { getCustomRepository, getRepository } from 'typeorm';
+import { SurveysRepository } from '../repositories/SurveysRepository';
 
 class SurveyController {
 	async create(req: Request, res: Response) {
 		const { description, title } = req.body;
 
-		const surveysRepository = getRepository(survey)
+		const surveysRepository = getCustomRepository(SurveysRepository)
 
 		const surveyAlreadyExists = await surveysRepository.findOne({ title });
 
@@ -21,17 +21,20 @@ class SurveyController {
 					msg: 'Survey title cannot be an empty field.' 
 				});
 		
-		const slug = title
-									.replace(/\s+/g, '-')
-									.replace(/,/g, '')
-									.toLowerCase()
-									.substring(0, 75);
+		const slug = title.replace(/\s+/g, '-')
+											.replace(/,/g, '')
+											.toLowerCase()
+											.substring(0, 75);
 
-		const Survey = surveysRepository.create({ title, slug, description });
+		const survey = surveysRepository.create({ 
+			title, 
+			slug, 
+			description 
+		});
 
-		await surveysRepository.save(Survey);
+		await surveysRepository.save(survey);
 
-		return res.json(Survey);
+		return res.json(survey);
 	}
 }
 
