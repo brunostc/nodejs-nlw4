@@ -7,7 +7,7 @@ const router = Router();
 const user = new UserController();
 const survey = new SurveyController();
 
-router.post('/users', user.create);
+router.post('/users/create', user.create);
 router.put('/users/edit/:id', user.update)
 router.delete('/users/delete/:id', user.delete);
 router.get('/users/list', user.index)

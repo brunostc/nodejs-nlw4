@@ -19,13 +19,17 @@
   },
   "homepage": "https://github.com/brunostc/nodejs-nlw4#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
+    "crypto-js": "^4.0.0",
     "express": "^4.17.1",
     "reflect-metadata": "^0.1.13",
     "sqlite3": "^5.0.2",
     "typeorm": "^0.2.31",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "yup": "^0.32.9"
   },
   "devDependencies": {
+    "@types/bcrypt": "^3.0.0",
     "@types/express": "^4.17.11",
     "@types/uuid": "^8.3.0",
     "ts-node-dev": "^1.1.1",

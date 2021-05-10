@@ -1,25 +1,39 @@
 import { Request, Response } from 'express';
 import { getCustomRepository } from 'typeorm';
 import { UsersRepository } from '../repositories/UserRepository';
+import bcrypt from 'bcrypt';
+import * as Yup from 'yup';
 
 const err0 = { msg: 'User email already in use.' };
 const err1 = { msg: 'Invalid input data' };
 const err2 = { msg: 'User not found' };
 const err3 = { msg: 'There are no users to be listed' };
+const err4 = { msg: 'Password error.' };
+const err5 = { msg: 'Invalida schema' }
 
 class UserController {
 	async create(req: Request, res: Response) {
-		const { name, email } = req.body;
+    const { name, email, password, repeatPassword } = req.body;
+    const SALT_ROUNDS = 10
 
-    if (name === '' || email === '') return res.status(400).json(err1);
+    const schema = Yup.object().shape({
+      name: Yup.string().required(),
+      email: Yup.string().email().required(),
+      password: Yup.string().required().min(8),
+      repeatPassword: Yup.string().required().min(8),
+    });
 
-		const repository = getCustomRepository(UsersRepository);
+    if (password !== repeatPassword) return res.status(400).json(err4);
 
-		const userAlreadyExists = await repository.findOne({ email });
+    if (! (await schema.isValid(req.body)) ) return res.status(400).json(err5);
 
-		if (userAlreadyExists) return res.status(400).json(err0);
-		
-		const user = repository.create({ name, email });
+    const repository = getCustomRepository(UsersRepository);
+
+    const userExists = await repository.findOne({ where: { email: req.body.email } });
+
+    if (userExists) return res.status(400).json(err0);
+
+		const user = repository.create({ name, email, hPassword });
 
 		await repository.save(user);
 
